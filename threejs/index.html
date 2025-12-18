@@ -3,39 +3,46 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>02 // Spatial Web</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROJECT_THREEJS</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; overflow: hidden; background: #050505; font-family: monospace; }
-        .back-btn { position: fixed; top: 20px; left: 20px; color: #fff; text-decoration: none; border: 1px solid #333; padding: 10px 20px; background: rgba(0,0,0,0.8); z-index: 10; }
+        :root { --bg: #050505; --accent: #00f260; --glass: rgba(10, 10, 10, 0.8); }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
+        
+        /* AR Background Layers */
+        #ar-feed { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -3; filter: grayscale(80%) brightness(0.5); opacity: 0; transition: opacity 1s; }
+        .ar-overlay { position: fixed; inset: 0; background: rgba(5, 5, 5, 0.6); z-index: -2; backdrop-filter: blur(2px); }
+        
+        /* Shared UI */
+        .back-btn { position: fixed; top: 30px; left: 30px; z-index: 100; text-decoration: none; color: #fff; font-family: 'JetBrains Mono'; border: 1px solid rgba(255,255,255,0.2); padding: 10px 20px; background: var(--glass); transition: 0.3s; }
+        .back-btn:hover { border-color: var(--accent); color: var(--accent); }
+        
+        #project-container { position: relative; z-index: 1; width: 100vw; height: 100vh; }
+        .project-hud { position: fixed; bottom: 30px; left: 30px; font-family: 'JetBrains Mono'; font-size: 0.7rem; color: #aaa; z-index: 10; }
     </style>
 </head>
 <body>
-    <a href="../index.html" class="back-btn">← SYSTEM.ROOT</a>
+    <video id="ar-feed" autoplay playsinline muted></video>
+    <div class="ar-overlay"></div>
+    <a href="../index.html" class="back-btn">← RETURN.TO_ROOT</a>
+    
+    <div id="project-container"><div id='app'></div></div>
+    <div class="project-hud">UNIT_TYPE: PROJECT_THREEJS <br> STATUS: LIVE_RENDER</div>
+
     <script>
-        const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x050505, 0.02);
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({antialias:true});
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
-        
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.autoRotate = true;
-
-        const geo = new THREE.TorusKnotGeometry(10, 3, 100, 16);
-        const mat = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.3 });
-        const mesh = new THREE.Mesh(geo, mat);
-        scene.add(mesh);
-        
-        const grid = new THREE.GridHelper(200, 50, 0x333333, 0x111111);
-        grid.position.y = -15;
-        scene.add(grid);
-
-        camera.position.z = 40;
-        function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
-        animate();
+        async function initAR() {
+            const v = document.getElementById('ar-feed');
+            if (navigator.mediaDevices?.getUserMedia) {
+                try {
+                    const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                    v.srcObject = s; v.onloadedmetadata = () => v.style.opacity = '1';
+                } catch (e) { console.log("AR Mode Offline"); }
+            }
+        }
+        initAR();
+        console.log('Project Loaded')
     </script>
 </body>
 </html>
