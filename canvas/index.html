@@ -4,45 +4,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROJECT_CANVAS</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <title>Anas Alhaj | PROJECT.01_CHAOS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #050505; --accent: #00f260; --glass: rgba(10, 10, 10, 0.8); }
+        :root { --accent: #00f260; --bg: #050505; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
         
-        /* AR Background Layers */
-        #ar-feed { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -3; filter: grayscale(80%) brightness(0.5); opacity: 0; transition: opacity 1s; }
-        .ar-overlay { position: fixed; inset: 0; background: rgba(5, 5, 5, 0.6); z-index: -2; backdrop-filter: blur(2px); }
+        /* AR Background System */
+        #ar-feed { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -3; filter: grayscale(80%) brightness(0.4); opacity: 0; transition: opacity 1s; }
+        .ar-overlay { position: fixed; inset: 0; background: rgba(5, 5, 5, 0.7); z-index: -2; backdrop-filter: blur(3px); }
         
-        /* Shared UI */
-        .back-btn { position: fixed; top: 30px; left: 30px; z-index: 100; text-decoration: none; color: #fff; font-family: 'JetBrains Mono'; border: 1px solid rgba(255,255,255,0.2); padding: 10px 20px; background: var(--glass); transition: 0.3s; }
+        /* UI Elements */
+        .nav-bar { position: fixed; top: 0; width: 100%; padding: 30px; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
+        .back-btn { text-decoration: none; color: #fff; font-family: 'Space Mono'; border: 1px solid rgba(255,255,255,0.2); padding: 10px 20px; background: rgba(0,0,0,0.5); transition: 0.3s; }
         .back-btn:hover { border-color: var(--accent); color: var(--accent); }
         
-        #project-container { position: relative; z-index: 1; width: 100vw; height: 100vh; }
-        .project-hud { position: fixed; bottom: 30px; left: 30px; font-family: 'JetBrains Mono'; font-size: 0.7rem; color: #aaa; z-index: 10; }
+        #main-stage { position: relative; z-index: 1; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .hud-info { position: fixed; bottom: 30px; left: 30px; font-family: 'Space Mono'; font-size: 0.7rem; color: #666; pointer-events: none; }
     </style>
 </head>
 <body>
     <video id="ar-feed" autoplay playsinline muted></video>
     <div class="ar-overlay"></div>
-    <a href="../index.html" class="back-btn">← RETURN.TO_ROOT</a>
     
-    <div id="project-container"><div id='app'></div></div>
-    <div class="project-hud">UNIT_TYPE: PROJECT_CANVAS <br> STATUS: LIVE_RENDER</div>
+    <div class="nav-bar">
+        <a href="../index.html" class="back-btn">← ESC_TO_ROOT</a>
+        <div style="font-family: 'Space Mono'; font-size: 0.8rem;">PROJECT.01_CHAOS</div>
+    </div>
 
+    <div id="main-stage"><canvas id='cvs'></canvas></div>
+    <div class="hud-info">STATUS: AR_ACTIVE <br> SOURCE: ENV_CAMERA</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        async function initAR() {
+        // --- Shared AR Logic ---
+        async function startAR() {
             const v = document.getElementById('ar-feed');
-            if (navigator.mediaDevices?.getUserMedia) {
-                try {
-                    const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-                    v.srcObject = s; v.onloadedmetadata = () => v.style.opacity = '1';
-                } catch (e) { console.log("AR Mode Offline"); }
-            }
+            try {
+                const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                v.srcObject = s; v.onloadedmetadata = () => v.style.opacity = '1';
+            } catch(e) { console.log("Camera Offline"); }
         }
-        initAR();
-        console.log('Project Loaded')
+        startAR();
+
+        // --- Project Specific Logic ---
+        const c=document.getElementById('cvs'); const ctx=c.getContext('2d'); c.width=innerWidth; c.height=innerHeight; function anim(){ ctx.fillStyle='rgba(0,0,0,0.05)'; ctx.fillRect(0,0,c.width,c.height); ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(Math.random()*c.width, Math.random()*c.height, 1, 0, 7); ctx.fill(); requestAnimationFrame(anim); } anim();
     </script>
 </body>
 </html>
