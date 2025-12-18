@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>05 // Shader Core</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; font-family: monospace; }
+        .back-btn { position: fixed; top: 20px; left: 20px; color: #fff; text-decoration: none; border: 1px solid #333; padding: 10px 20px; background: rgba(0,0,0,0.8); z-index: 10; }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-btn">← SYSTEM.ROOT</a>
+    <div id="container"></div>
+    <script id="frag" type="x-shader/x-fragment">
+        uniform float time;
+        uniform vec2 resolution;
+        void main() {
+            vec2 uv = gl_FragCoord.xy / resolution.xy;
+            vec3 col = 0.5 + 0.5*cos(time+uv.xyx+vec3(0,2,4));
+            gl_FragColor = vec4(col,1.0);
+        }
+    </script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        
+        const mat = new THREE.ShaderMaterial({
+            uniforms: { time: { value: 1.0 }, resolution: { value: new THREE.Vector2(window.innerWidth,window.innerHeight) } },
+            vertexShader: "void main() { gl_Position = vec4( position, 1.0 ); }",
+            fragmentShader: document.getElementById('frag').textContent
+        });
+        scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2), mat));
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            mat.uniforms.time.value += 0.05;
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>

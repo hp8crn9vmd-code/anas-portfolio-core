@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>03 // Dynamics</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background: #111; font-family: monospace; }
+        .back-btn { position: fixed; top: 20px; left: 20px; color: #fff; text-decoration: none; border: 1px solid #333; padding: 10px 20px; background: rgba(0,0,0,0.8); z-index: 10; }
+        .hint { position: fixed; bottom: 30px; width: 100%; text-align: center; color: #666; pointer-events: none; }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-btn">← SYSTEM.ROOT</a>
+    <div class="hint">CLICK TO SPAWN OBJECTS</div>
+    <script>
+        const Engine = Matter.Engine, Render = Matter.Render, World = Matter.World, Bodies = Matter.Bodies, Mouse = Matter.Mouse, MouseConstraint = Matter.MouseConstraint;
+        const engine = Engine.create();
+        const render = Render.create({
+            element: document.body, engine: engine,
+            options: { width: window.innerWidth, height: window.innerHeight, wireframes: false, background: '#111' }
+        });
+        
+        const ground = Bodies.rectangle(window.innerWidth/2, window.innerHeight+30, window.innerWidth, 60, { isStatic: true });
+        World.add(engine.world, [ground]);
+
+        const mouse = Mouse.create(render.canvas);
+        const mc = MouseConstraint.create(engine, { mouse: mouse, constraint: { render: { visible: false } } });
+        World.add(engine.world, mc);
+
+        window.addEventListener('mousedown', (e) => {
+            const size = Math.random() * 30 + 20;
+            const box = Bodies.rectangle(e.clientX, e.clientY, size, size, { render: { fillStyle: Math.random()>0.5?'#fff':'#444' } });
+            World.add(engine.world, box);
+        });
+
+        Engine.run(engine); Render.run(render);
+    </script>
+</body>
+</html>

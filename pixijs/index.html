@@ -1,0 +1,43 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>04 // Stress Unit</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/6.2.0/browser/pixi.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; font-family: monospace; }
+        .back-btn { position: fixed; top: 20px; left: 20px; color: #fff; text-decoration: none; border: 1px solid #333; padding: 10px 20px; background: rgba(0,0,0,0.8); z-index: 10; }
+        .fps { position: fixed; top: 20px; right: 20px; color: #0f0; }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-btn">← SYSTEM.ROOT</a>
+    <div class="fps">PARTICLES: 3000</div>
+    <script>
+        const app = new PIXI.Application({ width: window.innerWidth, height: window.innerHeight, backgroundColor: 0x000000 });
+        document.body.appendChild(app.view);
+        
+        const graphics = new PIXI.Graphics();
+        graphics.beginFill(0xFFFFFF); graphics.drawCircle(0,0,3); graphics.endFill();
+        const texture = app.renderer.generateTexture(graphics);
+        
+        const items = [];
+        for(let i=0; i<3000; i++) {
+            const s = new PIXI.Sprite(texture);
+            s.x = Math.random() * app.screen.width; s.y = Math.random() * app.screen.height;
+            s.tint = Math.random() * 0xFFFFFF;
+            s.speed = 1 + Math.random();
+            app.stage.addChild(s);
+            items.push(s);
+        }
+        
+        app.ticker.add(() => {
+            items.forEach(s => {
+                s.y += s.speed;
+                if(s.y > app.screen.height) s.y = 0;
+            });
+        });
+    </script>
+</body>
+</html>
